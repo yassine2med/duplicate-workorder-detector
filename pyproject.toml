@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "duplicate-workorder-detector"
+version = "0.1.0"
+description = "Flag likely duplicate work orders using fuzzy location and description matching"
+requires-python = ">=3.10"
+dependencies = ["rapidfuzz>=3.0"]
+license = { text = "MIT" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
