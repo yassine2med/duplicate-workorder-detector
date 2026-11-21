@@ -1,6 +1,14 @@
 # duplicate-workorder-detector
 
-When a room is too hot, three people call it in and the help desk opens three work orders. If each one goes to a vendor, the vendor is dispatched three times. This tool reads a work order CSV and flags pairs that describe the same job: same place, similar wording, opened within a few days of each other. It groups the pairs, names the earliest order as the one to keep, and lists the others for review. The sample data is synthetic.
+[![CI](https://github.com/yassine2med/duplicate-workorder-detector/actions/workflows/ci.yml/badge.svg)](https://github.com/yassine2med/duplicate-workorder-detector/actions/workflows/ci.yml) ![Python](https://img.shields.io/badge/python-3.10%2B-3776ab) ![License](https://img.shields.io/badge/license-MIT-8fb08a)
+
+Flags likely duplicate work orders in a CSV and groups them for review.
+
+![Screenshot](docs/screenshot.png)
+
+## What it is for
+
+When a room is too hot, three people call it in and the help desk opens three work orders. If each one goes to a vendor, the vendor is dispatched three times. A help desk lead, facility coordinator or maintenance planner uses this tool to find pairs that describe the same job: same place, similar wording, opened within a few days of each other. It groups the pairs, names the earliest order as the one to keep, and lists the others for review.
 
 ## Install
 
@@ -10,7 +18,19 @@ python -m pip install -r requirements.txt
 python -m pip install -e .
 ```
 
-## Usage
+## How to use
+
+| I want to | Command |
+| --- | --- |
+| Find duplicate groups and scored pairs in a work order file | `python -m dupdetect data/work_orders.csv` |
+| Require a closer location match (default 90, scale 0 to 100) | `python -m dupdetect FILE --location-min 95` |
+| Require a closer description match (default 70, scale 0 to 100) | `python -m dupdetect FILE --description-min 80` |
+| Change how many days apart two orders may be (default 14) | `python -m dupdetect FILE --window 7` |
+| See all options | `python -m dupdetect --help` |
+
+Input columns: `id`, `location`, `description` and `created` (ISO date). In the sample, WO-3010 and WO-3011 are the same problem in the same room 73 days apart. They are not flagged, because that is a repeat failure and not a double entry. WO-3001 and WO-3003 are not flagged because the rooms differ (101 and 102).
+
+Worked example:
 
 ```
 python -m dupdetect data/work_orders.csv
@@ -45,10 +65,6 @@ WO-3001 WO-3002  score  87.6  loc 100.0  desc  79.4  1 d apart
 WO-3014 WO-3015  score  87.5  loc 100.0  desc  79.2  1 d apart
 WO-3018 WO-3019  score  84.3  loc 100.0  desc  73.9  0 d apart
 ```
-
-Options: `--location-min` (default 90), `--description-min` (default 70) and `--window` in days (default 14).
-
-In the sample, WO-3010 and WO-3011 are the same problem in the same room 73 days apart. They are not flagged, because that is a repeat failure and not a double entry. WO-3001 and WO-3003 are not flagged because the rooms differ (101 and 102).
 
 ## How it works
 
